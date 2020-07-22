@@ -25,8 +25,14 @@ class BaseApi(object):
         self.responce = requests.request(self.method,self.url,params=self.params,headers=self.headers,data=self.data,json=self.json)
         return self
 
-    def validate(self,key,value):
-        actual_value = getattr(self.responce,key)
-        assert actual_value == value
+    def validate(self,key,except_value):
+        value = self.responce
+        for _key in key.split("."):
+            if isinstance(value,requests.Response):
+                value = getattr(value,_key)
+            elif isinstance(value,requests.structures.CaseInsensitiveDict):
+                value = value[_key]
+
+        assert value == except_value
         return self   
     

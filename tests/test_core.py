@@ -84,7 +84,7 @@ def test_httpbin_get():
     # assert resp.headers["server"] == "gunicorn/19.9.0"
     # assert resp.json()["url"] == "https://httpbin.org/get"
 
-    ApiHttpbinGet().run().validate("status_code",200)
+    ApiHttpbinGet().run().validate("status_code",200).validate("headers.server","gunicorn/19.9.0")
 
 def test_httpbin_get_with_params():
     # resp = requests.get(
@@ -95,7 +95,7 @@ def test_httpbin_get_with_params():
     # assert resp.headers["server"] == "gunicorn/19.9.0"
     # assert resp.json()["url"] == "https://httpbin.org/get?xyq=18"
 
-    ApiHttpbinGet().set_params(xyq=18,lqm=15).run().validate("status_code",200)
+    ApiHttpbinGet().set_params(xyq=18,lqm=15).run().validate("status_code",200).validate("headers.server","gunicorn/19.9.0")
 
 def test_httpbin_post():
     # resp = requests.post(
@@ -107,4 +107,4 @@ def test_httpbin_post():
     # assert resp.json()["url"] == "https://httpbin.org/post"
     # assert resp.json()["json"]["xyq"] == 18 
 
-    ApiHttpbinPost().set_json({"xyq":18}).run().validate("status_code",200)
+    ApiHttpbinPost().set_json({"xyq":18}).run().validate("status_code",200).validate("headers.server","gunicorn/19.9.0")
