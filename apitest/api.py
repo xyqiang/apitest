@@ -1,6 +1,6 @@
 import requests
 
-session = requests.sessions.Session()
+# session = requests.sessions.Session()
 
 class BaseApi(object):
 
@@ -31,7 +31,8 @@ class BaseApi(object):
         self.json = json_data
         return self
 
-    def run(self):
+    def run(self,session=None):
+        session = session or requests.sessions.Session()
         self.responce = session.request(
             self.method,
             self.url,

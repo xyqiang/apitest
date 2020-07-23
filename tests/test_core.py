@@ -1,3 +1,4 @@
+import pytest
 from tests.api.httpbin import * 
 
 
@@ -188,15 +189,15 @@ def test_httpbin_parameters_extract():
         .validate("json().url","https://httpbin.org/post")\
         .validate("json().headers.Accept","application/json")\
         .validate("json().json.freeform",freeform)
- 
-def test_httpbin_login_status():
+
+def test_httpbin_login_status(init_session):
     # login and get cookie
-    ApiHttpbinSetCookies().set_params(freeform = "567").run()
+    ApiHttpbinSetCookies().set_params(freeform = "567").run(init_session)
 
     # request anther api, check cookie
     resp = ApiHttpbinPost()\
         .set_json({"abc":123})\
-        .run()\
+        .run(init_session)\
         .get_responce()
     request_headers = resp.request.headers
     assert "freeform=567" in request_headers["Cookie"]
