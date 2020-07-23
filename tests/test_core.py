@@ -171,4 +171,21 @@ def test_httpbin_setcookies():
     assert freeform1 == "123"
     assert freeform2 == "456"
 
+def test_httpbin_parameters_extract():
+    # get value
+    freeform = ApiHttpbinGetCookies()\
+        .set_cookie("freeform","123")\
+        .run()\
+        .extract("json().cookies.freeform")
+    assert freeform == "123"
+
+    # use value as parameter
+    ApiHttpbinPost()\
+        .set_json({"freeform":freeform})\
+        .run()\
+        .validate("status_code",200)\
+        .validate("headers.server","gunicorn/19.9.0")\
+        .validate("json().url","https://httpbin.org/post")\
+        .validate("json().headers.Accept","application/json")\
+        .validate("json().json.freeform",freeform)
  
