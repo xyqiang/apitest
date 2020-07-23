@@ -25,6 +25,10 @@ class BaseApi(object):
         self.responce = requests.request(self.method,self.url,params=self.params,headers=self.headers,data=self.data,json=self.json)
         return self
 
+    def extract(self,field):
+        value = getattr(self.responce,field)
+        return value
+
     def validate(self,key,except_value):
         value = self.responce
         for _key in key.split("."):
