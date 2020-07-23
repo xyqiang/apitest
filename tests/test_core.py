@@ -189,3 +189,14 @@ def test_httpbin_parameters_extract():
         .validate("json().headers.Accept","application/json")\
         .validate("json().json.freeform",freeform)
  
+def test_httpbin_login_status():
+    # login and get cookie
+    ApiHttpbinSetCookies().set_params(freeform = "567").run()
+
+    # request anther api, check cookie
+    resp = ApiHttpbinPost()\
+        .set_json({"abc":123})\
+        .run()\
+        .get_responce()
+    request_headers = resp.request.headers
+    assert "freeform=567" in request_headers["Cookie"]
