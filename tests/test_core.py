@@ -1,4 +1,5 @@
-from apitest.api import BaseApi
+from tests.api.httpbin import * 
+
 
 # 第一个单元测试
 def test_version():
@@ -38,14 +39,14 @@ def test_version():
 #         return self   
     
 
-class ApiHttpbinGet(BaseApi):
+# class ApiHttpbinGet(BaseApi):
     
-    url = "https://httpbin.org/get"
-    params = {}
-    method = "GET"
-    headers = {"Accept": "application/json"}
-    data = ""
-    json = {}
+#     url = "https://httpbin.org/get"
+#     params = {}
+#     method = "GET"
+#     headers = {"Accept": "application/json"}
+#     data = ""
+#     json = {}
 
     # def set_params(self,**params):
     #     self.params = {}
@@ -60,12 +61,12 @@ class ApiHttpbinGet(BaseApi):
     #     assert actual_value == value
     #     return self
 
-class ApiHttpbinPost(BaseApi):
+# class ApiHttpbinPost(BaseApi):
     
-    url = "https://httpbin.org/post"
-    method = "POST"
-    headers = {"Accept": "application/json"}
-    json = {"xyq":18}
+#     url = "https://httpbin.org/post"
+#     method = "POST"
+#     headers = {"Accept": "application/json"}
+#     json = {"xyq":18}
 
     # def run(self):
     #     self.responce = requests.request(self.method,self.url,headers=self.headers,json=self.json)
@@ -84,7 +85,8 @@ def test_httpbin_get():
     # assert resp.headers["server"] == "gunicorn/19.9.0"
     # assert resp.json()["url"] == "https://httpbin.org/get"
 
-    ApiHttpbinGet().run()\
+    ApiHttpbinGet()\
+        .run()\
         .validate("status_code",200)\
         .validate("headers.server","gunicorn/19.9.0")\
         .validate("json().url","https://httpbin.org/get")\
@@ -101,7 +103,9 @@ def test_httpbin_get_with_params():
     # assert resp.headers["server"] == "gunicorn/19.9.0"
     # assert resp.json()["url"] == "https://httpbin.org/get?xyq=18"
 
-    ApiHttpbinGet().set_params(xyq=18,lqm=15).run()\
+    ApiHttpbinGet()\
+        .set_params(xyq=18,lqm=15)\
+        .run()\
         .validate("status_code",200)\
         .validate("headers.server","gunicorn/19.9.0")\
         .validate("json().url","https://httpbin.org/get?xyq=18&lqm=15")\
@@ -117,8 +121,31 @@ def test_httpbin_post():
     # assert resp.json()["url"] == "https://httpbin.org/post"
     # assert resp.json()["json"]["xyq"] == 18 
 
-    ApiHttpbinPost().set_json({"xyq":18}).run()\
+    ApiHttpbinPost()\
+        .set_json({"xyq":18})\
+        .run()\
         .validate("status_code",200)\
         .validate("headers.server","gunicorn/19.9.0")\
         .validate("json().url","https://httpbin.org/post")\
+        .validate("json().headers.Accept","application/json")\
+        .validate("json().json.xyq",18)
+
+def test_httpbin_parameters_share():
+    user_id = "xyq18"
+    ApiHttpbinGet()\
+        .set_params(user_id=user_id)\
+        .run()\
+        .validate("status_code",200)\
+        .validate("headers.server","gunicorn/19.9.0")\
+        .validate("json().url","https://httpbin.org/get?user_id={}".format(user_id))\
         .validate("json().headers.Accept","application/json")
+
+
+    ApiHttpbinPost()\
+        .set_json({"user_id":user_id})\
+        .run()\
+        .validate("status_code",200)\
+        .validate("headers.server","gunicorn/19.9.0")\
+        .validate("json().url","https://httpbin.org/post")\
+        .validate("json().headers.Accept","application/json")\
+        .validate("json().json.user_id","xyq18")
