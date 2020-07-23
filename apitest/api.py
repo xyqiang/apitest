@@ -26,12 +26,8 @@ class BaseApi(object):
         return self
 
     def extract(self,field):
-        value = getattr(self.responce,field)
-        return value
-
-    def validate(self,key,except_value):
         value = self.responce
-        for _key in key.split("."):
+        for _key in field.split("."):
             if isinstance(value,requests.Response):
                 if _key == "json()":
                     value = self.responce.json()
@@ -40,6 +36,20 @@ class BaseApi(object):
             elif isinstance(value,(requests.structures.CaseInsensitiveDict,dict)):
                 value = value[_key]
 
-        assert value == except_value
+        return value
+
+    def validate(self,key,except_value):
+        # value = self.responce
+        # for _key in key.split("."):
+        #     if isinstance(value,requests.Response):
+        #         if _key == "json()":
+        #             value = self.responce.json()
+        #         else:
+        #             value = getattr(value,_key)
+        #     elif isinstance(value,(requests.structures.CaseInsensitiveDict,dict)):
+        #         value = value[_key]
+        
+        actual_value =self.extract(key)
+        assert actual_value == except_value
         return self   
     
